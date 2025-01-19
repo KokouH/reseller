@@ -1,5 +1,6 @@
 
 from typing import Any, List
+from loguru import logger
 import requests
 import datetime
 import time
@@ -15,12 +16,31 @@ class Parser:
         self.min_delay = 2 # in sec
         self.last_request_time = time.time()
 
+        self._proxies = []
+        self._pr_index = 0
+        self._init_proxy()
+
+    def _init_proxy(self):
+        with open('proxies.txt', 'r') as file:
+            l = file.read().split('\n')
+
+        if l:
+            logger.info(f"Found {len(l)} proxies")
+            self._proxies = [{"http":"http://"+proxy_s, "https":"http://"+proxy_s} for proxy_s in l]
+
     def ses_get(self, *args, **kwargs) -> requests.Response:
         cout = 0
         while cout < self.retry_count:
             if time.time() - self.last_request_time < 2:
                 time.sleep(2 - time.time() + self.last_request_time)
-            res = self.ses.get(*args, **kwargs)
+            if not self._proxies:
+                res = self.ses.get(*args, **kwargs)
+            else:
+                proxy = self._proxies[self._pr_index]
+                res = self.ses.get(*args, **kwargs, proxies=proxy)
+                self._pr_index += 1
+                if self._pr_index >= len(self._proxies):
+                    self._pr_index = 0
             self.last_request_time = time.time()
             if res.status_code == 200:
                 return res
