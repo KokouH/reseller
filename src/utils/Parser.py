@@ -5,6 +5,7 @@ import requests
 import datetime
 import time
 import json
+import os
 
 class Parser:
     def __init__(self, with_retry: bool = True) -> None:
@@ -23,6 +24,8 @@ class Parser:
     def _init_proxy(self):
         with open('proxies.txt', 'r') as file:
             l = file.read().split('\n')
+            if os.name == "posix":
+                l = l[:-1]
 
         if l:
             logger.info(f"Found {len(l)} proxies")

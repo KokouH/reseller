@@ -11,11 +11,11 @@ if __name__ == "__main__":
 
 	procs = list()
 
-	accs = accounts.Accounts()
-	accs.add(accounts.Account( *acc_data_1 ))
-	accs.add(accounts.Account( *acc_data_2 ))
-	accs.add(accounts.Account( *acc_data_3 ))
-	accs.add(accounts.Account( *acc_data_4 ))
+	# accs = accounts.Accounts()
+	# accs.add(accounts.Account( *acc_data_1 ))
+	# accs.add(accounts.Account( *acc_data_2 ))
+	# accs.add(accounts.Account( *acc_data_3 ))
+	# accs.add(accounts.Account( *acc_data_4 ))
 
 	if 'seller' in need_start:
 		seller_proc = Seller(accs)
