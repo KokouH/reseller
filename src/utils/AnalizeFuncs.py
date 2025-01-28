@@ -31,6 +31,7 @@ def remove_spikes(history: List) -> List:
 	for i, val in enumerate(df['Spike']):
 		if not val:
 			clean_history.append(history[i])
+
 	return clean_history
 
 def get_last_n_days(history: List, n: int) -> List:
@@ -51,6 +52,7 @@ def get_sells_n_days(history: List, n: int) -> int:
 	history = get_last_n_days(history, n)
 	history = remove_spikes(history)
 	sells = 0
+
 	for i in history:
 		sells += int(i[2])
 	
@@ -108,3 +110,13 @@ def get_history_stable(history: List) -> bool:
 	std_dev = np.std(moving_average.dropna())
 
 	return (std_dev < THRESHOLD_STABLE)
+
+def get_reference_price(history: List) -> float:
+	history = get_last_n_days(history, 4)
+	history = remove_spikes(history)
+	
+	if not len(history):
+		return 0.0
+	
+	reference_price = max(float(i[1]) for i in history)
+	return reference_price
