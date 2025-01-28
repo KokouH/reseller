@@ -24,8 +24,7 @@ class Parser:
     def _init_proxy(self):
         with open('proxies.txt', 'r') as file:
             l = file.read().split('\n')
-            if os.name == "posix":
-                l = l[:-1]
+            l = [i for i in l if i]
 
         if l:
             logger.info(f"Found {len(l)} proxies")
