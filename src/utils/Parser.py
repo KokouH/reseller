@@ -75,12 +75,9 @@ class Parser:
     def get_item_histogram(self, itemid: int) -> Any | None:
         res = self.ses_get(f'https://steamcommunity.com/market/itemordershistogram?country=US&language=english&currency=1&item_nameid={itemid}')
         
-        if res == None:
-            return None
-        if res.status_code != 200:
-            return None
-        
-        return res.json()
+        if res:
+            return res.json()
+        return None
     
     def get_history(self, page: str) -> List:
         start = page.find('var line1=')

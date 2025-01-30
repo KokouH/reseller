@@ -65,7 +65,14 @@ def get_week_sells(history: List) -> int:
 	return get_sells_n_days(history, 7)
 
 def get_deep_in_cup(histogram, month_sells, buy_price: float) -> float:
-	count = sum(i[1] for i in histogram['buy_order_graph'] if buy_price >= i[0])
+	count = 0
+	for i in histogram['buy_order_graph']:
+		if buy_price < i[0]:
+			break;
+		if buy_price == i[0]:
+			count = i[1]
+			break;
+		count = i[1]
 	return count * 30 / month_sells
 
 def get_trend_n_days(history: List, n: int):

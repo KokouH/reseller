@@ -49,25 +49,17 @@ class ItemsBase(Base):
 {self.time_updated}"
 
 if __name__ == "__main__":
-	engine = create_engine("sqlite:///database/market.db", echo=True)
+	engine = create_engine("sqlite:///database/market.db")
 	Base.metadata.create_all(engine)
 	Session = sessionmaker()
 	Session.configure(bind=engine)
 	session = Session()
-	# item = ItemsBase(hash_name='asdf',
-	# 		  appid='123',
-	# 		  steamid='123',
-	# 		  buy_price=123,
-	# 		  sell_price=32,
-	# 		  count_buy=20,
-	# 		  trend_7d=1.1,
-	# 		  trend_30d=1.2)
-	# session.add(item)
 	
-	# print(session.query(ItemsBase).first())
-	session.query(ItemsBase).filter(
-		ItemsBase.trend_30d >= "1",
+	print(session.query(ItemsBase).first())
+	f_items = session.query(ItemsBase).filter(
+		ItemsBase.trend_30d >= 1,
 		ItemsBase.trend_30d <= 1.2,
+		ItemsBase.trend_7d >= 1,
 		ItemsBase.sells_30d >= 70,
 		ItemsBase.history_stable == True,
 		ItemsBase.buy_price_deep <= 5,
@@ -75,5 +67,5 @@ if __name__ == "__main__":
 
 	all_table = session.query(ItemsBase).all()
 	print(f"Len table {len(all_table)}")
-	# print(all_table[0])
+	print(f"Filtered items len: {len(f_items)}")
 	
