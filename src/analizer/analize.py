@@ -51,7 +51,6 @@ class Analizer(Process):
 						or steamid == None
 						or histogram == None
 					):
-						time.sleep(90)
 						continue
 					history = parser.get_history(parser.last_page)
 
@@ -63,7 +62,7 @@ class Analizer(Process):
 					t_item.sell_price = AnalizeFuncs.get_reference_price(history)
 					t_item.buy_price = t_item.sell_price * .87 * (1 - self._wanted_profit /  100)
 					t_item.trend_7d = AnalizeFuncs.get_trend_week(history)
-					t_item.trend_30d = AnalizeFuncs.get_month_sells(history)
+					t_item.trend_30d = AnalizeFuncs.get_trend_month(history)
 					t_item.sells_7d = AnalizeFuncs.get_week_sells(history)
 					t_item.sells_30d = AnalizeFuncs.get_month_sells(history)
 					t_item.sell_price_conf = AnalizeFuncs.get_sell_in_history(history, t_item.sell_price)

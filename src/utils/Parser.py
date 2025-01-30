@@ -46,7 +46,8 @@ class Parser:
             self.last_request_time = time.time()
             if res.status_code == 200:
                 return res
-            time.sleep(self.retry_time)
+            for _ in range(self.retry_time):
+                time.sleep(1)
             cout += 1
 
         return None
