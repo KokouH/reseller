@@ -20,6 +20,7 @@ class Account:
         self.login_cookies = login_cookies
         self.proxies = proxies
         self.balance = 0.0
+        self.max_risk = 0.0
 
         logger.info(f'Try login {username}')
         self._steam_client = SteamClient(api_key, username, password, steam_guard, proxies=proxies)
@@ -43,6 +44,6 @@ class Accounts:
         return self._accounts
     
     def update_balances(self) -> None:
-        for acc in self._acoounts:
+        for acc in self._accounts:
             acc._update_balance()
 

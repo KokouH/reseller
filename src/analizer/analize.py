@@ -19,7 +19,7 @@ class AnalItem:
 		self.appid: str | int = appid
 
 class Analizer(Process):
-	def __init__(self, wanted_profit:float = 4):
+	def __init__(self, wanted_profit:float = 6):
 		super().__init__()
 		self._analize_items: List[AnalItem] = list()
 		self._db_session: None | Any = None
@@ -51,6 +51,7 @@ class Analizer(Process):
 						or steamid == None
 						or histogram == None
 					):
+						logger.info(f"Item skiped: {item.hash_name}")
 						continue
 					history = parser.get_history(parser.last_page)
 
@@ -67,7 +68,7 @@ class Analizer(Process):
 					t_item.sells_30d = AnalizeFuncs.get_month_sells(history)
 					t_item.sell_price_conf = AnalizeFuncs.get_sell_in_history(history, t_item.sell_price)
 					t_item.buy_price_deep = AnalizeFuncs.get_deep_in_cup(histogram, t_item.sells_30d, t_item.buy_price)
-					t_item.history_stable = AnalizeFuncs.get_history_stable(history)
+					t_item.history_stable = AnalizeFuncs.get_volatility(history) <= .2
 
 					table_item = self._db_session.query(ItemsBase).where(ItemsBase.hash_name == item.hash_name).first()
 					if table_item:

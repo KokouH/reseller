@@ -5,11 +5,6 @@ from typing import List
 
 # Main params
 min_sells_per_month = 60
-wanted_profit = 10
-max_deeps = 7
-trend_max = 1.15
-trend_min = 0.95
-sell_conf = 0.1
 
 # Spike clean params
 WINDOW_SIZE = 10
@@ -18,21 +13,30 @@ THRESHOLD_MULTIPLIER = 2.5
 # Stable check
 THRESHOLD_STABLE = 0.4
 
-def remove_spikes(history: List) -> List:
-	df = pd.DataFrame([i[1] for i in history], columns=['Value'])
-	window_size = WINDOW_SIZE
-	threshold_multiplier = THRESHOLD_MULTIPLIER 
+# def remove_spikes(history: List) -> List:
+# 	df = pd.DataFrame([i[1] for i in history], columns=['Value'])
+# 	window_size = WINDOW_SIZE
+# 	threshold_multiplier = THRESHOLD_MULTIPLIER 
 
-	df['Rolling_Mean'] = df['Value'].rolling(window=window_size).mean()
-	df['Rolling_Std'] = df['Value'].rolling(window=window_size).std()
-	df['Spike'] = (df['Value'] > (df['Rolling_Mean'] + threshold_multiplier * df['Rolling_Std'])) | \
-				(df['Value'] < (df['Rolling_Mean'] - threshold_multiplier * df['Rolling_Std']))
-	clean_history = list()
-	for i, val in enumerate(df['Spike']):
-		if not val:
-			clean_history.append(history[i])
+# 	df['Rolling_Mean'] = df['Value'].rolling(window=window_size).mean()
+# 	df['Rolling_Std'] = df['Value'].rolling(window=window_size).std()
+# 	df['Spike'] = (df['Value'] > (df['Rolling_Mean'] + threshold_multiplier * df['Rolling_Std'])) | \
+# 				(df['Value'] < (df['Rolling_Mean'] - threshold_multiplier * df['Rolling_Std']))
+# 	clean_history = list()
+# 	for i, val in enumerate(df['Spike']):
+# 		if not val:
+# 			clean_history.append(history[i])
 
-	return clean_history
+# 	return clean_history
+
+def remove_spikes(history: List):
+    df = pd.DataFrame([i[1] for i in history], columns=['Value'])
+    q1 = df['Value'].quantile(0.25)
+    q3 = df['Value'].quantile(0.75)
+    iqr = q3 - q1
+    df['Spike'] = (df['Value'] > q3 + 1.5 * iqr) | (df['Value'] < q1 - 1.5 * iqr)
+
+    return list([history[i] for i in df[~df['Spike']].index])
 
 def get_last_n_days(history: List, n: int) -> List:
 	last_history = []
@@ -107,16 +111,24 @@ def get_sell_in_history(history: List, sell_price: float) -> float:
 
 	return above_sells / all_sells
 
-def get_history_stable(history: List) -> bool:
+# def get_history_stable(history: List) -> bool:
+# 	history = get_last_month(history)
+# 	history = remove_spikes(history)
+
+# 	data = pd.Series([i[1] for i in history])
+# 	ws = int(min_sells_per_month / 15) # window size 2 days
+# 	moving_average = data.rolling(window=ws).mean()
+# 	std_dev = np.std(moving_average.dropna())
+
+# 	return (std_dev < THRESHOLD_STABLE)
+
+def get_volatility(history: List):
 	history = get_last_month(history)
 	history = remove_spikes(history)
 
-	data = pd.Series([i[1] for i in history])
-	ws = int(min_sells_per_month / 15) # window size 2 days
-	moving_average = data.rolling(window=ws).mean()
-	std_dev = np.std(moving_average.dropna())
-
-	return (std_dev < THRESHOLD_STABLE)
+	prices = [i[1] for i in history]
+	volatility = np.std(prices) / np.mean(prices)
+	return volatility
 
 def get_reference_price(history: List) -> float:
 	history = get_last_n_days(history, 4)

@@ -14,7 +14,7 @@ class Parser:
         self.with_retry = with_retry
         self.retry_time = 90
         self.retry_count = 3
-        self.min_delay = 2 # in sec
+        self.min_delay = 3 # in sec
         self.last_request_time = time.time()
 
         self._proxies = []
