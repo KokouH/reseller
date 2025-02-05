@@ -94,7 +94,6 @@ class Analizer(Process):
 		Session = sessionmaker()
 		Session.configure(bind=engine)
 		self._db_session = Session()
-		self._db_session.
 
 	def run(self):
 		self.load_items()
