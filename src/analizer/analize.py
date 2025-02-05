@@ -77,17 +77,24 @@ class Analizer(Process):
 						self._db_session.query(ItemsBase).filter(ItemsBase.hash_name == item.hash_name).update(update_dict)
 					else:
 						self._db_session.add(t_item)
-					self._db_session.commit()
+
+					try:
+						self._db_session.commit()
+					except Exception as e:
+						self._db_session.rollback()
+						logger.critical(f"Commit to db")
+						exit(-1)
+
 					logger.info(f"Add item {item.hash_name}")
 				except Exception as e:
 					logger.error(e)
 
 	def db_connect(self):
 		engine = create_engine("sqlite:///database/market.db")
-		Table.Base.metadata.create_all(engine)
 		Session = sessionmaker()
 		Session.configure(bind=engine)
 		self._db_session = Session()
+		self._db_session.
 
 	def run(self):
 		self.load_items()

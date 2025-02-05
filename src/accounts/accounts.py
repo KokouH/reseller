@@ -21,6 +21,7 @@ class Account:
         self.proxies = proxies
         self.balance = 0.0
         self.max_risk = 0.0
+        self.sell_listings = None
 
         logger.info(f'Try login {username}')
         self._steam_client = SteamClient(api_key, username, password, steam_guard, proxies=proxies)

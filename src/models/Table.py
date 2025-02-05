@@ -50,19 +50,18 @@ class ItemsBase(Base):
 
 if __name__ == "__main__":
 	engine = create_engine("sqlite:///database/market.db")
-	Base.metadata.create_all(engine)
 	Session = sessionmaker()
 	Session.configure(bind=engine)
 	session = Session()
-	
+
 	# print(session.query(ItemsBase).first())
 	f_items = session.query(ItemsBase).filter(
-			ItemsBase.trend_30d >= .97,
+			ItemsBase.trend_30d >= .98,
 			ItemsBase.trend_30d <= 1.3,
-			ItemsBase.trend_7d >= .93,
-			ItemsBase.sells_30d >= 90,
+			ItemsBase.trend_7d >= .95,
+			ItemsBase.sells_30d >= 80,
 			ItemsBase.history_stable == True,
-			ItemsBase.buy_price_deep <= 3,
+			ItemsBase.buy_price_deep <= 5,
 			ItemsBase.buy_price >= .1,
 			ItemsBase.sell_price_conf >= .2).all()
 
@@ -71,10 +70,20 @@ if __name__ == "__main__":
 	print(f"Len table {len(all_table)}")
 	print(f"Filtered items len: {len(f_items)}")
 	print(f"Max turnover amount: {sum(i.buy_price * i.count_buy / 2 for i in f_items)}$")
+	print(f"Collect time {at_by_time[-1].time_updated - at_by_time[0].time_updated}")
+	
 	import matplotlib.pyplot as plt
-	# print(f"Collect time {at_by_time[-20].time_updated - at_by_time[0].time_updated}")
+	print(at_by_time[0].time_updated, at_by_time[0].hash_name)
+	print(at_by_time[-1].time_updated, at_by_time[-1].hash_name)
 	y = [(i.time_updated - at_by_time[0].time_updated).total_seconds() for i in at_by_time]
 	x = [i for i in range(len(at_by_time))]
+	plt.subplot(1,2, 1)
 	plt.plot(x, y)
+
+	x = x[:-1]
+	y1 = []
+	for i in range(1, len(y)):
+		y1.append( y[i] - y[i - 1] )
+	plt.subplot(1,2,2)
+	plt.plot(x, y1)
 	plt.show()
-	
