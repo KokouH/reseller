@@ -20,7 +20,7 @@ class Parser:
 
 		self._proxies = []
 		self._pr_index = 0
-		# self._init_proxy()
+		self._init_proxy()
 
 	def _init_proxy(self):
 		with open('proxies.txt', 'r') as file:
@@ -30,6 +30,7 @@ class Parser:
 		if l:
 			logger.info(f"Found {len(l)} proxies")
 			self._proxies = [{"http":"http://"+proxy_s, "https":"http://"+proxy_s} for proxy_s in l]
+			self.sessions = list()
 			for proxy in self._proxies:
 				ses = requests.Session()
 				ses.proxies.update(proxy)
@@ -73,8 +74,7 @@ class Parser:
 	def get_item_page(self, hash_name: str, appid: int | str) -> str | None:
 		headers = {
 			'referer': 'https://steamcommunity.com/market/',
-			'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36',
-			"upgrade-insecure-requests": 1
+			'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36'
 		}
 		res = self.ses_get(f'https://steamcommunity.com/market/listings/{appid}/{hash_name}', headers=headers)
 		if res.status_code != 200:

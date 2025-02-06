@@ -104,14 +104,23 @@ for name in not_calc_items:
 print(f"All balances: {all_balances}\nAll sell_orders: {all_sellOrders}\nAll inv items: {all_invs}")
 print(f"All networs: {all_balances + all_sellOrders + all_invs}")
 
-ax = plt.subplot(2, 3, 1)
+plt.figure()
+ax = plt.subplot(1, 2, 1)
 data = [all_balances, all_sellOrders, all_invs]
-labels = ["Балансы", "Ордера на продажу", "Инвентари"]
+labels = [f"Балансы {all_balances}", f"Ордера {all_sellOrders}", f"Инвентари {all_invs}"]
 ax.pie(data, labels=labels, autopct='%.2f')
 
-ax = plt.subplot(2, 3, 4)
+ax = plt.subplot(1, 2, 2)
 data = [str(sum([l_all_balances[i], l_all_sellOrders[i], l_all_invs[i]])) for i in range(len(l_all_balances))]
 labels = [acc.username for acc in accs.get_accounts()]
 ax.pie(data, labels=labels, autopct="%.2f")
+
+plt.figure()
+for i, acc in enumerate( accs.get_accounts() ):
+	ax = plt.subplot(2, 2, i + 1)
+	data = [l_all_balances[i], l_all_sellOrders[i], l_all_invs[i]]
+	labels = [f'Баланс {l_all_balances[i]}', f'Ореда {l_all_sellOrders[i]}', f'Инвентарь {l_all_invs[i]}',]
+	ax.set_title(acc.username)
+	ax.pie(data, labels=labels, autopct='%.2f')
 
 plt.show()
