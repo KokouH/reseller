@@ -8,10 +8,10 @@ from accounts import accounts
 
 if __name__ == "__main__":
 	need_start = list()
-	# need_start.append("analize")
+	need_start.append("analize")
 	# need_start.append("seller")
 	# need_start.append('buyer')
-	need_start.append('updater')
+	# need_start.append('updater')
 
 	procs = list()
 	if max(i in need_start for i in 

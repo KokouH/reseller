@@ -3,7 +3,7 @@ import json
 import time
 
 from models import Table
-from models.Table import ItemsBase
+from models.Table import ItemsBase, Base
 from utils.Parser import Parser
 from utils import AnalizeFuncs
 
@@ -91,6 +91,7 @@ class Analizer(Process):
 
 	def db_connect(self):
 		engine = create_engine("sqlite:///database/market.db")
+		Base.metadata.create_all(bind=engine)
 		Session = sessionmaker()
 		Session.configure(bind=engine)
 		self._db_session = Session()
