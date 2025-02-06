@@ -62,11 +62,11 @@ class Seller(Process):
 				else:
 					if hash_name not in sell_prices_updated:
 						logger.info(f"Try get price: {hash_name}")
-						self._parser.get_item_page(hash_name)
+						self._parser.get_item_page(hash_name, game.app_id)
 						if not self._parser.last_page:
 							continue
 						itemId = self._parser.get_itemid_from_page(self._parser.last_page)
-						histogram = self._parser.get_item_histogram(itemId)
+						histogram = self._parser.get_item_histogram(itemId, hash_name, game.app_id)
 						if not histogram:
 							continue
 						sell_price = round(float(histogram['sell_order_graph'][0][0]) * 87)

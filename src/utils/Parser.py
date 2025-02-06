@@ -69,11 +69,11 @@ class Parser:
 		finally:
 			return itemid
 		
-	def get_item_page(self, hash_name: str, appid: int | str = 252490) -> str | None:
+	def get_item_page(self, hash_name: str, appid: int | str) -> str | None:
 		headers = {
 			'referer': 'https://steamcommunity.com/market/',
 			'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36',
-			
+			"upgrade-insecure-requests": 1
 		}
 		res = self.ses_get(f'https://steamcommunity.com/market/listings/{appid}/{hash_name}', headers=headers)
 		if res.status_code != 200:
@@ -82,8 +82,13 @@ class Parser:
 		self.last_page = res.text
 		return res.text
 	
-	def get_item_histogram(self, itemid: int) -> Any | None:
-		res = self.ses_get(f'https://steamcommunity.com/market/itemordershistogram?country=US&language=english&currency=1&item_nameid={itemid}')
+	def get_item_histogram(self, itemid: int, hash_name: str, appid: str) -> Any | None:
+		headers = {
+			'referer': f'https://steamcommunity.com/market/listings/{appid}/{hash_name}',
+			'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36',
+			'x-requested-with': 'XMLHttpRequest'
+		}
+		res = self.ses_get(f'https://steamcommunity.com/market/itemordershistogram?country=US&language=english&currency=1&item_nameid={itemid}', headers=headers)
 		
 		if res:
 			return res.json()

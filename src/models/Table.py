@@ -50,6 +50,7 @@ class ItemsBase(Base):
 
 if __name__ == "__main__":
 	engine = create_engine("sqlite:///database/market.db")
+	Base.metadata.create_all(bind=engine)
 	Session = sessionmaker()
 	Session.configure(bind=engine)
 	session = Session()

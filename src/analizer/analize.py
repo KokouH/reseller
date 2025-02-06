@@ -46,7 +46,7 @@ class Analizer(Process):
 					logger.info(f"Analize item: {item.hash_name}")
 					parser.get_item_page(item.hash_name, item.appid)
 					steamid = parser.get_itemid_from_page(parser.last_page)
-					histogram = parser.get_item_histogram(steamid)
+					histogram = parser.get_item_histogram(steamid, item.hash_name, item.appid)
 					if (parser.last_page == None 
 						or steamid == None
 						or histogram == None

@@ -73,7 +73,7 @@ for acc in accs.get_accounts():
 		hash_name = item['market_hash_name']
 		t_item = session.query(ItemsBase).filter(ItemsBase.hash_name == hash_name, ItemsBase.appid == GameOptions.RUST.app_id).first()
 		if t_item:
-			val = t_item.sell_price * .87
+			val = t_item.sell_price * .87 * int(item['amount'])
 			all_invs += val
 			inv_val += val
 		else:
@@ -86,7 +86,7 @@ for acc in accs.get_accounts():
 		hash_name = item['market_hash_name']
 		t_item = session.query(ItemsBase).filter(ItemsBase.hash_name == hash_name, ItemsBase.appid == GameOptions.TF2.app_id).first()
 		if t_item:
-			val = t_item.sell_price * .87
+			val = t_item.sell_price * .87 * int(item['amount'])
 			all_invs += val
 			inv_val += val
 		else:
