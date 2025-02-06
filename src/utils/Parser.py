@@ -33,6 +33,7 @@ class Parser:
 			for proxy in self._proxies:
 				ses = requests.Session()
 				ses.proxies.update(proxy)
+				self.sessions.append(ses)
 
 	def ses_get(self, *args, **kwargs) -> requests.Response:
 		cout = 0
