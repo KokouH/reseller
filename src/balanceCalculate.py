@@ -30,8 +30,11 @@ TODO
 	
 accs = accounts.Accounts()
 accs.add(accounts.Account( *acc_data_1 ))
+sleep(random() * 2 + 1)
 accs.add(accounts.Account( *acc_data_2 ))
+sleep(random() * 2 + 1)
 accs.add(accounts.Account( *acc_data_3 ))
+sleep(random() * 2 + 1)
 accs.add(accounts.Account( *acc_data_4 ))
 
 engine = create_engine("sqlite:///database/market.db")
@@ -107,7 +110,7 @@ print(f"All networs: {all_balances + all_sellOrders + all_invs}")
 plt.figure()
 ax = plt.subplot(1, 2, 1)
 data = [all_balances, all_sellOrders, all_invs]
-labels = [f"Балансы {all_balances}", f"Ордера {all_sellOrders}", f"Инвентари {all_invs}"]
+labels = ["Балансы %.2f" % all_balances, "Ордера  %.2f" % all_sellOrders, "Инвентари %.2f" % all_invs]
 ax.pie(data, labels=labels, autopct='%.2f')
 
 ax = plt.subplot(1, 2, 2)
@@ -119,7 +122,7 @@ plt.figure()
 for i, acc in enumerate( accs.get_accounts() ):
 	ax = plt.subplot(2, 2, i + 1)
 	data = [l_all_balances[i], l_all_sellOrders[i], l_all_invs[i]]
-	labels = [f'Баланс {l_all_balances[i]}', f'Ореда {l_all_sellOrders[i]}', f'Инвентарь {l_all_invs[i]}',]
+	labels = ['Баланс %.2f' % l_all_balances[i], 'Ордера %.2f' % l_all_sellOrders[i], 'Инвентарь %.2f' % l_all_invs[i],]
 	ax.set_title(acc.username)
 	ax.pie(data, labels=labels, autopct='%.2f')
 
