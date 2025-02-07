@@ -1,5 +1,6 @@
 from config import *
 from typing import List
+import time
 from loguru import logger
 from steampy.client import SteamClient
 
@@ -21,6 +22,7 @@ class Account:
         self.proxies = proxies
         self.balance = 0.0
         self.max_risk = 0.0
+        self.buy_orders_sum = 0.0
         self.sell_listings = None
 
         logger.info(f'Try login {username}')
@@ -47,4 +49,5 @@ class Accounts:
     def update_balances(self) -> None:
         for acc in self._accounts:
             acc._update_balance()
+            time.sleep(2)
 

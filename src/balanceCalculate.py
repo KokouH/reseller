@@ -108,12 +108,12 @@ print(f"All balances: {all_balances}\nAll sell_orders: {all_sellOrders}\nAll inv
 print(f"All networs: {all_balances + all_sellOrders + all_invs}")
 
 plt.figure()
-ax = plt.subplot(1, 2, 1)
+ax = plt.subplot(2, 1, 1)
 data = [all_balances, all_sellOrders, all_invs]
 labels = ["Балансы %.2f" % all_balances, "Ордера  %.2f" % all_sellOrders, "Инвентари %.2f" % all_invs]
 ax.pie(data, labels=labels, autopct='%.2f')
 
-ax = plt.subplot(1, 2, 2)
+ax = plt.subplot(2, 1, 2)
 data = [str(sum([l_all_balances[i], l_all_sellOrders[i], l_all_invs[i]])) for i in range(len(l_all_balances))]
 labels = [acc.username for acc in accs.get_accounts()]
 ax.pie(data, labels=labels, autopct="%.2f")

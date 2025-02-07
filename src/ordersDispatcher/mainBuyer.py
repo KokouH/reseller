@@ -21,6 +21,7 @@ class Buyer(Process):
 		accs.update_balances()
 		self._accounts: List[accounts.Account] = accs.get_accounts()
 		self._parser: Parser = Parser()
+		self._all_balance = sum(acc.balance for acc in self._accounts)
 
 	def buy_items_on_all(self, items: List[ItemsBase]):
 		for acc in self._accounts:
@@ -54,6 +55,50 @@ class Buyer(Process):
 
 			logger.info(f"Created orders {int(percent/len(items) * 100)}%: {item.hash_name}, {item.buy_price}$ per one")
 
+	def buy_items_on_all_normal_speed(self, items: List[ItemsBase]):
+		risk = self._all_balance * 8 / len(self._accounts)
+		i = 0
+		while i < len(self._accounts):
+			if self._accounts[i].balance <= risk:
+				del(self._accounts[i])
+			else:
+				i += 1
+
+		if not self._accounts:
+			raise Exception(f"Can't create new buy orders, ")
+		
+		risk = self._all_balance * 8 / len(self._accounts)
+		acc_index = 0
+		for item in items:
+			buy_count = int(risk / item.buy_price + 1)
+
+			try:
+				acc = self._accounts[acc_index]
+				if (item.buy_price * buy_count + acc.buy_orders_sum >= acc.balance * 10):
+					acc_index += 1
+					acc = self._accounts[acc_index]
+				responce = acc._steam_client.market.create_buy_order(
+					item.hash_name,
+					str(int(item.buy_price * 100)),
+					buy_count,
+					GameOptions.TF2 if item.appid == "440" else GameOptions.RUST,
+					Currency.USD
+				)
+			except ApiException as e:
+				logger.error(f"{acc._steam_client.username} is can't create order {item.hash_name}\n{e}")
+				print(acc.max_risk, item.buy_price)
+				for _ in range(100):
+					time.sleep(random())
+				if responce.get('success') == 25:
+					self._accounts.remove(acc)
+			except IndexError as e:
+				logger.critical(f"{items.index(item) + 1} not created of {len(items)}")
+				exit(-1)
+
+			logger.info(f"Created orders {int(items.index(item)/len(items) * 100)}%: {item.hash_name}, {item.buy_price}$ per one")
+		
+		logger.success("All buy orders created")
+
 	def run(self):
 		engine = create_engine("sqlite:///database/market.db")
 		Session = sessionmaker()
@@ -70,4 +115,4 @@ class Buyer(Process):
 			ItemsBase.buy_price >= .1,
 			ItemsBase.sell_price_conf >= .2).all()
 
-		self.buy_items_on_all(f_items)
+		self.buy_items_on_all_normal_speed(f_items)
