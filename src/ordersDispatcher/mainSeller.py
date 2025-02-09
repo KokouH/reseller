@@ -8,6 +8,7 @@ from accounts import accounts
 from utils.Parser import Parser
 from models.Table import ItemsBase
 from steampy.models import GameOptions
+from random import random
 from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy import create_engine
 
@@ -87,8 +88,8 @@ class Seller(Process):
 					logger.error(f"{sell_response}\n{item_id} {game.app_id} {sell_price} {int(inventory[item_id]['amount'])}")
 					exit(-1)
 
-				time.sleep(2)
-
+				time.sleep(2 + random())
+			time.sleep(2 + random())
 		logger.info(f"All sells {all_sell_send/100} $")
 
 	def db_connect(self):

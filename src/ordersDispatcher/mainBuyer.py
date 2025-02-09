@@ -20,7 +20,6 @@ class Buyer(Process):
 		super().__init__()
 		accs.update_balances()
 		self._accounts: List[accounts.Account] = accs.get_accounts()
-		self._parser: Parser = Parser()
 		self._all_balance = sum(acc.balance for acc in self._accounts)
 
 	def buy_items_on_all(self, items: List[ItemsBase]):
@@ -56,10 +55,11 @@ class Buyer(Process):
 			logger.info(f"Created orders {int(percent/len(items) * 100)}%: {item.hash_name}, {item.buy_price}$ per one")
 
 	def buy_items_on_all_normal_speed(self, items: List[ItemsBase]):
-		risk = self._all_balance * 8 / len(self._accounts)
+		risk = self._all_balance * 8 / len(items)
 		i = 0
 		while i < len(self._accounts):
 			if self._accounts[i].balance <= risk:
+				logger.info(f"Remove account from circle: {self._accounts[i].username}")
 				del(self._accounts[i])
 			else:
 				i += 1
@@ -67,36 +67,51 @@ class Buyer(Process):
 		if not self._accounts:
 			raise Exception(f"Can't create new buy orders, ")
 		
-		risk = self._all_balance * 8 / len(self._accounts)
+		self._all_balance = sum(acc.balance for acc in self._accounts)
+		risk = self._all_balance * 8 / len(items)
+		logger.info(f"Balances: {self._all_balance}, risk: {risk}")
 		acc_index = 0
 		for item in items:
-			buy_count = int(risk / item.buy_price + 1)
-
-			try:
-				acc = self._accounts[acc_index]
-				if (item.buy_price * buy_count + acc.buy_orders_sum >= acc.balance * 10):
-					acc_index += 1
+			buy_count = int(risk / item.buy_price)
+			if not buy_count:
+				buy_count = 1
+			success = 0
+			while not success:
+				try:
 					acc = self._accounts[acc_index]
-				responce = acc._steam_client.market.create_buy_order(
-					item.hash_name,
-					str(int(item.buy_price * 100)),
-					buy_count,
-					GameOptions.TF2 if item.appid == "440" else GameOptions.RUST,
-					Currency.USD
-				)
-			except ApiException as e:
-				logger.error(f"{acc._steam_client.username} is can't create order {item.hash_name}\n{e}")
-				print(acc.max_risk, item.buy_price)
-				for _ in range(100):
-					time.sleep(random())
-				if responce.get('success') == 25:
-					self._accounts.remove(acc)
-			except IndexError as e:
-				logger.critical(f"{items.index(item) + 1} not created of {len(items)}")
-				exit(-1)
+					if (item.buy_price * buy_count + acc.buy_orders_sum >= acc.balance * 10):
+						acc_index += 1
+						acc = self._accounts[acc_index]
+						logger.info(f"Change account to {acc.username}")
+					responce = acc._steam_client.market.create_buy_order(
+						item.hash_name,
+						str(int(item.buy_price * 100)),
+						buy_count,
+						GameOptions(item.appid, '2'),
+						Currency.USD
+					)
+					if (responce.get('success') == 1 # created
+						or responce.get('success') == 29 # already exists
+					):
+						success = 1
+						acc.buy_orders_sum += item.buy_price * buy_count
+					else:
+						logger.error(f"{acc._steam_client.username} is can't create order {item.hash_name}")
+						if responce.get('success') != 16: # steam: Sorry! We had trouble
+							for _ in range(130):
+								time.sleep(random())
+						time.sleep(random() * 3)
+					
+				except IndexError as e:
+					logger.critical(f"{items.index(item) + 1} not created of {len(items)}")
+					exit(-1)
+				except Exception as e:
+					logger.critical(e)
+					exit(-1)
 
 			logger.info(f"Created orders {int(items.index(item)/len(items) * 100)}%: {item.hash_name}, {item.buy_price}$ per one")
-		
+			time.sleep(random() * 2 + 2)
+
 		logger.success("All buy orders created")
 
 	def run(self):

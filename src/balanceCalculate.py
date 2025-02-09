@@ -54,7 +54,7 @@ l_all_invs = list()
 
 not_calc_items = {} # hash_name: count
 for acc in accs.get_accounts():
-	logger.info(f"Start collect info of {acc.username}")
+	logger.info(f"Start collect info of {acc.username[:5]}")
 	# BALANCE
 	all_balances += float(acc._steam_client.get_wallet_balance())
 	l_all_balances.append(float(acc._steam_client.get_wallet_balance()))
@@ -115,7 +115,7 @@ ax.pie(data, labels=labels, autopct='%.2f')
 
 ax = plt.subplot(2, 1, 2)
 data = [str(sum([l_all_balances[i], l_all_sellOrders[i], l_all_invs[i]])) for i in range(len(l_all_balances))]
-labels = [acc.username for acc in accs.get_accounts()]
+labels = [acc.username[:5] for acc in accs.get_accounts()]
 ax.pie(data, labels=labels, autopct="%.2f")
 
 plt.figure()
@@ -123,7 +123,7 @@ for i, acc in enumerate( accs.get_accounts() ):
 	ax = plt.subplot(2, 2, i + 1)
 	data = [l_all_balances[i], l_all_sellOrders[i], l_all_invs[i]]
 	labels = ['Баланс %.2f' % l_all_balances[i], 'Ордера %.2f' % l_all_sellOrders[i], 'Инвентарь %.2f' % l_all_invs[i],]
-	ax.set_title(acc.username)
+	ax.set_title(acc.username[:5])
 	ax.pie(data, labels=labels, autopct='%.2f')
 
 plt.show()
