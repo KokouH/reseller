@@ -7,6 +7,7 @@ from models.Table import ItemsBase
 
 from loguru import logger
 from steampy.models import GameOptions
+from steampy.exceptions import ApiException
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 
@@ -56,49 +57,62 @@ not_calc_items = {} # hash_name: count
 for acc in accs.get_accounts():
 	logger.info(f"Start collect info of {acc.username[:5]}")
 	# BALANCE
-	all_balances += float(acc._steam_client.get_wallet_balance())
-	l_all_balances.append(float(acc._steam_client.get_wallet_balance()))
+	try:
+		all_balances += float(acc._steam_client.get_wallet_balance())
+		l_all_balances.append(float(acc._steam_client.get_wallet_balance()))
+		logger.info("Balance recived")
+	except ApiException as e:
+		logger.error(f"Can't get sell_orders for: {acc.username[:5]}")
 	sleep(random() * 2 + 2)
-	logger.info("Balance recived")
 
 	# SELL ORDERS
-	sell_orders = list(acc._steam_client.market.get_my_market_listings()['sell_listings'].values())
-	val = sum(float(order["you_receive"].replace('$', '').replace(' USD', '').replace(' each', '')) * int(order['description']['amount']) for order in sell_orders)
-	all_sellOrders += val
-	l_all_sellOrders.append(val)
+	try:
+		sell_orders = list(acc._steam_client.market.get_my_market_listings()['sell_listings'].values())
+		val = sum(float(order["you_receive"].replace('$', '').replace(' USD', '').replace(' each', '')) * int(order['description']['amount']) for order in sell_orders)
+		all_sellOrders += val
+		l_all_sellOrders.append(val)
+		logger.info("Orders recived")
+	except ApiException as e:
+		logger.error(f"Can't get sell_orders for: {acc.username[:5]}")
 	sleep(random() * 2 + 2)
-	logger.info("Orders recived")
 
 	# INVENTORY
 	inv_val = 0.0
-	inv = list(acc._steam_client.get_my_inventory(GameOptions.RUST).values())
-	for item in inv:
-		hash_name = item['market_hash_name']
-		t_item = session.query(ItemsBase).filter(ItemsBase.hash_name == hash_name, ItemsBase.appid == GameOptions.RUST.app_id).first()
-		if t_item:
-			val = t_item.sell_price * .87 * int(item['amount'])
-			all_invs += val
-			inv_val += val
-		else:
-			if hash_name not in not_calc_items:
-				not_calc_items[hash_name] = 0
-			not_calc_items[hash_name] += int(item['amount'])
+	try:
+		inv = list(acc._steam_client.get_my_inventory(GameOptions.RUST).values())
+		for item in inv:
+			hash_name = item['market_hash_name']
+			t_item = session.query(ItemsBase).filter(ItemsBase.hash_name == hash_name, ItemsBase.appid == GameOptions.RUST.app_id).first()
+			if t_item:
+				val = t_item.sell_price * .87 * int(item['amount'])
+				all_invs += val
+				inv_val += val
+			else:
+				if hash_name not in not_calc_items:
+					not_calc_items[hash_name] = 0
+				not_calc_items[hash_name] += int(item['amount'])
+	except ApiException as e:
+		logger.error(f"Can't get RUST inv for: {acc.username[:5]}")
 	sleep(random() * 2 + 2)
-	inv = list(acc._steam_client.get_my_inventory(GameOptions.TF2).values())
-	for item in inv:
-		hash_name = item['market_hash_name']
-		t_item = session.query(ItemsBase).filter(ItemsBase.hash_name == hash_name, ItemsBase.appid == GameOptions.TF2.app_id).first()
-		if t_item:
-			val = t_item.sell_price * .87 * int(item['amount'])
-			all_invs += val
-			inv_val += val
-		else:
-			if hash_name not in not_calc_items:
-				not_calc_items[hash_name] = 0
-			not_calc_items[hash_name] += int(item['amount'])
-	sleep(random() * 2 + 2)
-	l_all_invs.append(inv_val)
+
+	try:
+		inv = list(acc._steam_client.get_my_inventory(GameOptions.TF2).values())
+		for item in inv:
+			hash_name = item['market_hash_name']
+			t_item = session.query(ItemsBase).filter(ItemsBase.hash_name == hash_name, ItemsBase.appid == GameOptions.TF2.app_id).first()
+			if t_item:
+				val = t_item.sell_price * .87 * int(item['amount'])
+				all_invs += val
+				inv_val += val
+			else:
+				if hash_name not in not_calc_items:
+					not_calc_items[hash_name] = 0
+				not_calc_items[hash_name] += int(item['amount'])
+	except ApiException as e:
+		logger.error(f"Can't get TF2 inv for: {acc.username[:5]}")
 	logger.info("Inventory recived")
+	l_all_invs.append(inv_val)
+	sleep(random() * 2 + 2)
 
 for name in not_calc_items:
 	recv = float(input(f"Price for {name}: ")) * not_calc_items[name]
