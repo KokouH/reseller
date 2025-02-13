@@ -55,7 +55,11 @@ class Buyer(Process):
 			logger.info(f"Created orders {int(percent/len(items) * 100)}%: {item.hash_name}, {item.buy_price}$ per one")
 
 	def buy_items_on_all_normal_speed(self, items: List[ItemsBase]):
-		risk = self._all_balance * 8 / len(items)
+		_k_coeff = 9 
+
+		if _k_coeff > 10:
+			raise ValueError(f"_k_coeff lower or equal 10")
+		risk = self._all_balance * _k_coeff / len(items)
 		i = 0
 		while i < len(self._accounts):
 			if self._accounts[i].balance <= risk:
@@ -68,7 +72,8 @@ class Buyer(Process):
 			raise Exception(f"Can't create new buy orders, ")
 		
 		self._all_balance = sum(acc.balance for acc in self._accounts)
-		risk = self._all_balance * 8 / len(items)
+
+		risk = self._all_balance * _k_coeff / len(items)
 		logger.info(f"Balances: {self._all_balance}, risk: {risk}")
 		acc_index = 0
 		for item in items:
@@ -79,7 +84,7 @@ class Buyer(Process):
 			while not success:
 				try:
 					acc = self._accounts[acc_index]
-					if (item.buy_price * buy_count + acc.buy_orders_sum >= acc.balance * 10):
+					if (item.buy_price * buy_count + acc.buy_orders_sum >= acc.balance * _k_coeff):
 						acc_index += 1
 						acc = self._accounts[acc_index]
 						logger.info(f"Change account to {acc.username}")

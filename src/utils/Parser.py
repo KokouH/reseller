@@ -8,7 +8,7 @@ import json
 import os
 
 class Parser:
-	def __init__(self, with_retry: bool = True) -> None:
+	def __init__(self, with_retry: bool = True, use_proxy: bool = True) -> None:
 		self.last_page: None | str = None
 		self.ses: requests.Session = requests.Session()
 		self.sessions: List[requests.Session] | None = None
@@ -20,7 +20,8 @@ class Parser:
 
 		self._proxies = []
 		self._pr_index = 0
-		self._init_proxy()
+		if use_proxy:
+			self._init_proxy()
 
 	def _init_proxy(self):
 		with open('proxies.txt', 'r') as file:

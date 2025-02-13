@@ -20,7 +20,7 @@ class Seller(Process):
 		super().__init__()
 		self._accounts: List[accounts.Account] = accs.get_accounts()
 		self._want_sell_table = {} # TODO name: wandRecive(per one), ADD want sell Table
-		self._parser: Parser = Parser()
+		self._parser: Parser = Parser(use_proxy=False)
 		self._db_session: None | Any = None
 
 		# self.update_want_sell_table()
