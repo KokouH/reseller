@@ -11,6 +11,9 @@ from steampy.exceptions import ApiException
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 
+from telegram import Bot
+import asyncio
+
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -27,7 +30,11 @@ TODO
 2.3 График скорости дохода( производная по 2.2 )
 """
 
-def main(accs):
+async def send_message(message):
+    bot = Bot(token=BOT_TOKEN)
+    await bot.send_message(chat_id=CHAT_ID, text=message)
+
+def main(accs: accounts.Accounts):
 
 	engine = create_engine("sqlite:///database/market.db")
 	Session = sessionmaker()
@@ -114,6 +121,12 @@ def main(accs):
 
 	print(f"All balances: {all_balances}\nAll sell_orders: {all_sellOrders}\nAll inv items: {all_invs}")
 	print(f"All networs: {all_balances + all_sellOrders + all_invs}")
+	for i, acc in enumerate(accs.get_accounts()):
+		m = f"{acc.username}\
+Balance: {l_all_balances[i]}\
+Inventory: {l_all_invs[i]}\
+SellOrders: {l_all_sellOrders[i]}"
+		asyncio.run(send_message(m))
 
 	plt.figure()
 	ax = plt.subplot(2, 1, 1)
