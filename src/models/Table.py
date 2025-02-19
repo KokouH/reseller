@@ -57,14 +57,14 @@ if __name__ == "__main__":
 
 	# print(session.query(ItemsBase).first())
 	f_items = session.query(ItemsBase).filter(
-			ItemsBase.trend_30d >= .98,
+			ItemsBase.trend_30d >= .96,
 			ItemsBase.trend_30d <= 1.3,
-			ItemsBase.trend_7d >= .95,
-			ItemsBase.sells_30d >= 80,
+			ItemsBase.trend_7d >= .98,
+			ItemsBase.sells_30d >= 70,
 			ItemsBase.history_stable == True,
 			ItemsBase.buy_price_deep <= 5,
 			ItemsBase.buy_price >= .1,
-			ItemsBase.sell_price_conf >= .2).all()
+			ItemsBase.sell_price_conf >= .08).all()
 
 	all_table = session.query(ItemsBase).all()
 	at_by_time = sorted(all_table, key=lambda m: m.time_updated)
@@ -74,7 +74,7 @@ if __name__ == "__main__":
 	print(f"Collect time {at_by_time[-1].time_updated - at_by_time[0].time_updated}")
 	
 	import matplotlib.pyplot as plt
-	print(at_by_time[0].time_updated, at_by_time[0].hash_name)
+	print(at_by_time[0])
 	print(at_by_time[-1].time_updated, at_by_time[-1].hash_name)
 	y = [(i.time_updated - at_by_time[0].time_updated).total_seconds() for i in at_by_time]
 	x = [i for i in range(len(at_by_time))]
@@ -87,4 +87,4 @@ if __name__ == "__main__":
 		y1.append( y[i] - y[i - 1] )
 	plt.subplot(1,2,2)
 	plt.plot(x, y1)
-	plt.show()
+	# plt.show()

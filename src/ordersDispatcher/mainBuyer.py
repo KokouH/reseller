@@ -74,7 +74,7 @@ class Buyer(Process):
 		self._all_balance = sum(acc.balance for acc in self._accounts)
 
 		risk = self._all_balance * _k_coeff / len(items)
-		logger.info(f"Balances: {self._all_balance}, risk: {risk}")
+		logger.info(f"Balances: {self._all_balance:.2f}, risk: {risk:.2f}")
 		acc_index = 0
 		for item in items:
 			buy_count = int(risk / item.buy_price)
@@ -114,7 +114,7 @@ class Buyer(Process):
 					logger.critical(e)
 					exit(-1)
 
-			logger.info(f"Created orders {int(items.index(item)/len(items) * 100)}%: {item.hash_name}, {item.buy_price}$ per one")
+			logger.info(f"Created orders {int(items.index(item)/len(items) * 100)}%: {item.hash_name}, {item.buy_price:.2f}$ per one")
 			time.sleep(random() * 2 + 2)
 
 		logger.success("All buy orders created")
@@ -126,13 +126,13 @@ class Buyer(Process):
 		session = Session()
 
 		f_items = session.query(ItemsBase).filter(
-			ItemsBase.trend_30d >= .98,
+			ItemsBase.trend_30d >= .96,
 			ItemsBase.trend_30d <= 1.3,
-			ItemsBase.trend_7d >= .95,
-			ItemsBase.sells_30d >= 80,
+			ItemsBase.trend_7d >= .98,
+			ItemsBase.sells_30d >= 70,
 			ItemsBase.history_stable == True,
 			ItemsBase.buy_price_deep <= 5,
 			ItemsBase.buy_price >= .1,
-			ItemsBase.sell_price_conf >= .2).all()
+			ItemsBase.sell_price_conf >= .08).all()
 
 		self.buy_items_on_all_normal_speed(f_items)
