@@ -27,11 +27,23 @@ if __name__ == "__main__":
 		accs.add(accounts.Account( *acc_data_3 ))
 		accs.add(accounts.Account( *acc_data_4 ))
 
+<<<<<<< HEAD
+=======
+	if 'analize' in need_start:
+		analazer_proc = Analizer(4)
+		analazer_proc.start()
+		analazer_proc.join()
+
+>>>>>>> 975234849d1dec93c9bfe26d12061f67497b38a9
 	if 'updater' in need_start:
 		updater_proc = OrdersUpdater(accs)
 		updater_proc.start()
 		updater_proc.join()
+<<<<<<< HEAD
 		
+=======
+
+>>>>>>> 975234849d1dec93c9bfe26d12061f67497b38a9
 	if 'seller' in need_start:
 		seller_proc = Seller(accs)
 		seller_proc.start()
@@ -41,7 +53,10 @@ if __name__ == "__main__":
 		buyer_proc = Buyer(accs)
 		buyer_proc.start()
 		buyer_proc.join()
+<<<<<<< HEAD
 
 	if 'balanceCalc' in need_start:
 		import balanceCalculate
 		balanceCalculate.main(accs)
+=======
+>>>>>>> 975234849d1dec93c9bfe26d12061f67497b38a9

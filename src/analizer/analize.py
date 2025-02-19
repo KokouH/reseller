@@ -37,6 +37,8 @@ class Analizer(Process):
 			for item_name in json.load(file):
 				self._analize_items.append( AnalItem(item_name, appid) )
 	
+		logger.info(f"All items count to collect: {len(self._analize_items)}")
+
 	def start_analize(self):
 		parser = Parser()
 		item_steam_ids = dict()

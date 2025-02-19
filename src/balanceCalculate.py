@@ -31,7 +31,11 @@ TODO
 """
 
 async def send_message(message):
+<<<<<<< HEAD
     bot = Bot(token=TOKEN_TG)
+=======
+    bot = Bot(token=BOT_TOKEN)
+>>>>>>> 975234849d1dec93c9bfe26d12061f67497b38a9
     await bot.send_message(chat_id=CHAT_ID, text=message)
 
 def main(accs: accounts.Accounts):
@@ -119,6 +123,7 @@ def main(accs: accounts.Accounts):
 		recv = float(input(f"Price for {name}: ")) * not_calc_items[name]
 		all_invs += recv
 
+<<<<<<< HEAD
 	all_balances = int(all_balances)
 	all_sellOrders = int(all_sellOrders)
 	all_invs = int(all_invs)
@@ -129,6 +134,16 @@ def main(accs: accounts.Accounts):
 	for i, acc in enumerate(accs.get_accounts()):
 		mes = f"{acc.username[:5]}\nBalance: {l_all_balances[i]:.2f}\nInventory: {l_all_invs[i]:.2f}\nSell orders: {l_all_sellOrders[i]:.2f}"
 		asyncio.run(send_message(mes))
+=======
+	print(f"All balances: {all_balances}\nAll sell_orders: {all_sellOrders}\nAll inv items: {all_invs}")
+	print(f"All networs: {all_balances + all_sellOrders + all_invs}")
+	for i, acc in enumerate(accs.get_accounts()):
+		m = f"{acc.username}\
+Balance: {l_all_balances[i]}\
+Inventory: {l_all_invs[i]}\
+SellOrders: {l_all_sellOrders[i]}"
+		asyncio.run(send_message(m))
+>>>>>>> 975234849d1dec93c9bfe26d12061f67497b38a9
 
 	plt.figure()
 	ax = plt.subplot(2, 1, 1)
