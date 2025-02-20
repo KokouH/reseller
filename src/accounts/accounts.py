@@ -3,6 +3,7 @@ from typing import List
 import time
 from loguru import logger
 from steampy.client import SteamClient
+from steampy.market import Currency
 
 class Account:
     def __init__(
@@ -12,7 +13,8 @@ class Account:
         password: str = None,
         steam_guard: str = None,
         login_cookies: dict = None,
-        proxies: dict = None
+        proxies: dict = None,
+        currency: Currency = Currency.USD
     ) -> None:
         self.api_key = api_key
         self.username = username
@@ -22,6 +24,7 @@ class Account:
         self.proxies = proxies
         self.balance = 0.0
         self.max_risk = 0.0
+        self.currency = currency
         self.buy_orders_sum = 0.0
         self.sell_listings = None
 
