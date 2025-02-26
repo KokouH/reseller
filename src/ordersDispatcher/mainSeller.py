@@ -56,7 +56,10 @@ class Seller(Process):
 			for item_id in item_ids:
 				if inventory[item_id]['marketable'] != 1:
 					continue
-				hash_name = inventory[item_id]['name']
+				hash_name = inventory[item_id]['market_hash_name']
+				if "''" in hash_name:
+					logger.info(f"Item skip {hash_name}")
+					continue
 				table_sell_price = self.get_item_from_table(hash_name, game.app_id)
 				if table_sell_price:
 					sell_price = int(table_sell_price.sell_price * 87)
