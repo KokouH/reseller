@@ -14,7 +14,7 @@ from sqlalchemy import create_engine
 
 class OrdersUpdater(Process):
 	'''
-	Отвечает только за оредров перевыставление
+	Отвечает только за перевыставление оредров
 	'''
 	def __init__(self, accs: accounts.Accounts):
 		super().__init__()
