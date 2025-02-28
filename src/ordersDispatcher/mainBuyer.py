@@ -37,7 +37,7 @@ class Buyer(Process):
 						str(int(item.buy_price * 100)),
 						int(acc.max_risk / item.buy_price + 1),
 						GameOptions.TF2 if item.appid == "440" else GameOptions.RUST,
-						Currency.USD
+						acc.currency
 					)
 				except ApiException as e:
 					logger.critical(f"{acc._steam_client.username} is can't create order {item.hash_name}\n{e}")
@@ -93,7 +93,7 @@ class Buyer(Process):
 						str(int(item.buy_price * 100)),
 						buy_count,
 						GameOptions(item.appid, '2'),
-						Currency.USD
+						acc.currency
 					)
 					if (responce.get('success') == 1 # created
 						or responce.get('success') == 29 # already exists

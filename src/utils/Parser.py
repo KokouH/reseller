@@ -1,6 +1,7 @@
 
 from typing import Any, List
 from loguru import logger
+from steampy.market import Currency
 import requests
 import datetime
 import time
@@ -8,7 +9,7 @@ import json
 import os
 
 class Parser:
-	def __init__(self, with_retry: bool = True, use_proxy: bool = True) -> None:
+	def __init__(self, with_retry: bool = True, use_proxy: bool = True, currency: Currency = Currency.USD) -> None:
 		self.last_page: None | str = None
 		self.ses: requests.Session = requests.Session()
 		self.sessions: List[requests.Session] | None = None
@@ -17,6 +18,7 @@ class Parser:
 		self.retry_count = 3
 		self.min_delay = 3 # in sec
 		self.last_request_time = time.time()
+		self.currency = currency
 
 		self._proxies = []
 		self._pr_index = 0
@@ -90,7 +92,7 @@ class Parser:
 			'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36',
 			'x-requested-with': 'XMLHttpRequest'
 		}
-		res = self.ses_get(f'https://steamcommunity.com/market/itemordershistogram?country=US&language=english&currency=1&item_nameid={itemid}', headers=headers)
+		res = self.ses_get(f'https://steamcommunity.com/market/itemordershistogram?country=US&language=english&currency={int(self.currency)}&item_nameid={itemid}', headers=headers)
 		
 		if res:
 			return res.json()
