@@ -4,7 +4,7 @@ from config import *
 from analizer.analize import Analizer
 from ordersDispatcher.mainSeller import Seller
 from ordersDispatcher.mainBuyer import Buyer
-from ordersDispatcher.updateSellOrders import OrdersUpdater
+from ordersDispatcher.updateOrders import OrdersUpdater
 from accounts import accounts
 
 class BotMain(Process):

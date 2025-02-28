@@ -1,9 +1,10 @@
+import os
 
 from config import *
 from analizer.analize import Analizer
 from ordersDispatcher.mainSeller import Seller
 from ordersDispatcher.mainBuyer import Buyer
-from ordersDispatcher.updateSellOrders import OrdersUpdater
+from ordersDispatcher.updateOrders import OrdersUpdater
 from accounts import accounts
 
 from Bot import EndPoints
@@ -50,6 +51,9 @@ def Main(need_start):
 		balanceCalculate.main(accs)
 
 if __name__ == "__main__":
+	if not os.path.isdir('database'):
+		os.mkdir('database')
+
 	if not USE_BOT:
 		need_start = list()
 		# need_start.append("analize")
