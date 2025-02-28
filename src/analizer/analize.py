@@ -1,11 +1,12 @@
 
+import asyncio
 import json
 import time
 
-from models import Table
 from models.Table import ItemsBase, Base
 from utils.Parser import Parser
 from utils import AnalizeFuncs
+from utils.TelegramBot import send_message
 
 from typing import List, Any
 from loguru import logger
@@ -41,7 +42,8 @@ class Analizer(Process):
 
 	def start_analize(self):
 		parser = Parser()
-		item_steam_ids = dict()
+		asyncio.run(send_message("Start analize"))
+		startTime = time.time()
 		for item in self._analize_items:
 			try:
 				logger.info(f"Analize item: {item.hash_name}")
@@ -89,6 +91,7 @@ class Analizer(Process):
 				logger.info(f"Add item {item.hash_name}")
 			except Exception as e:
 				logger.error(e)
+		asyncio.run(send_message(f"Comlite analize {int(time.time() - startTime)} sec"))
 
 	def db_connect(self):
 		engine = create_engine("sqlite:///database/market.db")

@@ -6,18 +6,21 @@ from ordersDispatcher.mainBuyer import Buyer
 from ordersDispatcher.updateSellOrders import OrdersUpdater
 from accounts import accounts
 
-if __name__ == "__main__":
-	need_start = list()
-	# need_start.append("analize")
-	need_start.append('updater')
-	need_start.append('buyer')
-	need_start.append("seller")
-	need_start.append('balanceCalc')
+from Bot import EndPoints
+from telegram import Update
+from telegram.ext import Application, CommandHandler, CallbackQueryHandler
 
+def MainWithBot():
+	application = Application.builder().token(TOKEN_TG).build()
+	application.add_handler(CommandHandler("start", EndPoints.start))
+	application.add_handler(CallbackQueryHandler(EndPoints.button))
+	application.run_polling(allowed_updates=Update.ALL_TYPES)
+
+def Main(need_start):
 	if 'analize' in need_start:
-		analazer_proc = Analizer(5.0)
-		analazer_proc.start()
-		analazer_proc.join()
+			analazer_proc = Analizer(5.0)
+			analazer_proc.start()
+			analazer_proc.join()
 
 	if max(i in need_start for i in 
 		('seller', 'buyer', 'updater')):
@@ -45,3 +48,17 @@ if __name__ == "__main__":
 	if 'balanceCalc' in need_start:
 		import balanceCalculate
 		balanceCalculate.main(accs)
+
+if __name__ == "__main__":
+	if not USE_BOT:
+		need_start = list()
+		# need_start.append("analize")
+		# need_start.append('updater')
+		# need_start.append('buyer')
+		need_start.append("seller")
+		need_start.append('balanceCalc')
+
+		Main(need_start)
+
+	if USE_BOT:
+		MainWithBot()

@@ -4,6 +4,7 @@ from accounts import accounts
 from time import sleep
 from random import random
 from models.Table import ItemsBase
+from utils.TelegramBot import send_message
 
 from loguru import logger
 from steampy.models import GameOptions
@@ -11,7 +12,6 @@ from steampy.exceptions import ApiException
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 
-from telegram import Bot
 import asyncio
 
 import matplotlib.pyplot as plt
@@ -29,10 +29,6 @@ TODO
 2.2 Показать динамику ценностей
 2.3 График скорости дохода( производная по 2.2 )
 """
-
-async def send_message(message):
-    bot = Bot(token=TOKEN_TG)
-    await bot.send_message(chat_id=CHAT_ID, text=message)
 
 def main(accs: accounts.Accounts):
 
@@ -124,32 +120,32 @@ def main(accs: accounts.Accounts):
 	all_invs = int(all_invs)
 	mes = f"All balances: {all_balances}\nAll sell_orders: {all_sellOrders}\nAll inv items: {all_invs}\nAll networs: {all_balances + all_sellOrders + all_invs}"
 	asyncio.run(send_message(mes))
-	print(mes)
 
 	for i, acc in enumerate(accs.get_accounts()):
 		mes = f"{acc.username[:5]}\nBalance: {l_all_balances[i]:.2f}\nInventory: {l_all_invs[i]:.2f}\nSell orders: {l_all_sellOrders[i]:.2f}"
 		asyncio.run(send_message(mes))
 
-	plt.figure()
-	ax = plt.subplot(2, 1, 1)
-	data = [all_balances, all_sellOrders, all_invs]
-	labels = ["Балансы %.2f" % all_balances, "Ордера  %.2f" % all_sellOrders, "Инвентари %.2f" % all_invs]
-	ax.pie(data, labels=labels, autopct='%.2f')
-
-	ax = plt.subplot(2, 1, 2)
-	data = [str(sum([l_all_balances[i], l_all_sellOrders[i], l_all_invs[i]])) for i in range(len(l_all_balances))]
-	labels = [acc.username[:5] for acc in accs.get_accounts()]
-	ax.pie(data, labels=labels, autopct="%.2f")
-
-	plt.figure()
-	for i, acc in enumerate( accs.get_accounts() ):
-		ax = plt.subplot(2, 2, i + 1)
-		data = [l_all_balances[i], l_all_sellOrders[i], l_all_invs[i]]
-		labels = ['Баланс %.2f' % l_all_balances[i], 'Ордера %.2f' % l_all_sellOrders[i], 'Инвентарь %.2f' % l_all_invs[i],]
-		ax.set_title(acc.username[:5])
+	if __name__ == "__main__":
+		plt.figure()
+		ax = plt.subplot(2, 1, 1)
+		data = [all_balances, all_sellOrders, all_invs]
+		labels = ["Балансы %.2f" % all_balances, "Ордера  %.2f" % all_sellOrders, "Инвентари %.2f" % all_invs]
 		ax.pie(data, labels=labels, autopct='%.2f')
 
-	plt.show()
+		ax = plt.subplot(2, 1, 2)
+		data = [str(sum([l_all_balances[i], l_all_sellOrders[i], l_all_invs[i]])) for i in range(len(l_all_balances))]
+		labels = [acc.username[:5] for acc in accs.get_accounts()]
+		ax.pie(data, labels=labels, autopct="%.2f")
+
+		plt.figure()
+		for i, acc in enumerate( accs.get_accounts() ):
+			ax = plt.subplot(2, 2, i + 1)
+			data = [l_all_balances[i], l_all_sellOrders[i], l_all_invs[i]]
+			labels = ['Баланс %.2f' % l_all_balances[i], 'Ордера %.2f' % l_all_sellOrders[i], 'Инвентарь %.2f' % l_all_invs[i],]
+			ax.set_title(acc.username[:5])
+			ax.pie(data, labels=labels, autopct='%.2f')
+
+		plt.show()
 
 if __name__ == "__main__":
 	accs = accounts.Accounts()
