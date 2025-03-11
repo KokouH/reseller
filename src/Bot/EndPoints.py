@@ -45,7 +45,6 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 		work_proc = BotMain(need_start)
 		work_proc.start()
 		await query.edit_message_text('\n'.join(i for i in need_start))
-		working = False
 		need_start = list()
 		return
 

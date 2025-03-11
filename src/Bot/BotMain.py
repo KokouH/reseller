@@ -1,4 +1,5 @@
 from multiprocessing import Process
+import asyncio
 
 from config import *
 from analizer.analize import Analizer
@@ -6,6 +7,7 @@ from ordersDispatcher.mainSeller import Seller
 from ordersDispatcher.mainBuyer import Buyer
 from ordersDispatcher.updateOrders import OrdersUpdater
 from accounts import accounts
+from utils.TelegramBot import send_message
 
 class BotMain(Process):
 	def __init__(self, need_start):
@@ -28,6 +30,7 @@ class BotMain(Process):
 			accs.add(accounts.Account( *acc_data_2 ))
 			accs.add(accounts.Account( *acc_data_3 ))
 			accs.add(accounts.Account( *acc_data_4 ))
+			asyncio.run(send_message("All accounts login"))
 
 		if 'updater' in need_start:
 			updater_proc = OrdersUpdater(accs)

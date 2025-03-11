@@ -21,8 +21,8 @@ import numpy as np
 TODO
 Добавить диаграммы:
 1 Круговые
-1.1 Общая распределение баланса инвнтаря и оредров +
-1.2 Балансов( вл бал, инв, орд ) распрделение по аккаунтам +
+1.1 Общая распределение баланса инвентаря и ордеров +
+1.2 Балансов( вл бал, инв, орд ) распределение по аккаунтам +
 
 2 Графики изменения
 2.1 Добавить логирование
@@ -52,8 +52,9 @@ def main(accs: accounts.Accounts):
 		logger.info(f"Start collect info of {acc.username[:5]}")
 		# BALANCE
 		try:
-			all_balances += float(acc._steam_client.get_wallet_balance())
-			l_all_balances.append(float(acc._steam_client.get_wallet_balance()))
+			bal = float(acc._steam_client.get_wallet_balance(with_hold=True))
+			all_balances += bal
+			l_all_balances.append(bal)
 			logger.info("Balance recived")
 		except ApiException as e:
 			logger.error(f"Can't get sell_orders for: {acc.username[:5]}")

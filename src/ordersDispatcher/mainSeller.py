@@ -46,13 +46,13 @@ class Seller(Process):
 		all_sell_send = 0
 		sell_prices_updated = {}
 		for acc in self._accounts:
-			logger.info(f"Start sell {game.app_id} items on {acc.username} ")
 			if not acc._steam_client.was_login_executed:
 				continue;
 
 			inventory = acc._steam_client.get_my_inventory(game)
 			item_ids = list(inventory.keys())
 
+			logger.info(f"Start sell {game.app_id} items on {acc.username} ")
 			for item_id in item_ids:
 				if inventory[item_id]['marketable'] != 1:
 					continue
@@ -83,13 +83,19 @@ class Seller(Process):
 				
 				all_sell_send += sell_price * int(inventory[item_id]['amount'])
 				sell_price = str(sell_price)
-				sell_response = acc._steam_client.market.create_sell_order(item_id, game, sell_price, int(inventory[item_id]['amount']))
+
+				tryys = 3
+				s = False
+				while not s:
+					sell_response = acc._steam_client.market.create_sell_order(item_id, game, sell_price, int(inventory[item_id]['amount']))
+					s = sell_response['success']
+					tryys -= 1
+					time.sleep(3)
 
 				if (sell_response['success']):
 					logger.info(f"Sell {hash_name} recive {int(sell_price)/100}$")
 				else:
 					logger.error(f"{sell_response}\n{item_id} {game.app_id} {sell_price} {int(inventory[item_id]['amount'])}")
-					exit(-1)
 
 				time.sleep(2 + random())
 			time.sleep(2 + random())
