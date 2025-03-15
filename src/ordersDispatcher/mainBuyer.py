@@ -134,5 +134,7 @@ class Buyer(Process):
 			ItemsBase.buy_price_deep <= 5,
 			ItemsBase.buy_price >= .1,
 			ItemsBase.sell_price_conf >= .08).all()
+		
+		session.close()
 
 		self.buy_items_on_all_normal_speed(f_items)

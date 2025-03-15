@@ -126,6 +126,8 @@ def main(accs: accounts.Accounts):
 		mes = f"{acc.username[:5]}\nBalance: {l_all_balances[i]:.2f}\nInventory: {l_all_invs[i]:.2f}\nSell orders: {l_all_sellOrders[i]:.2f}"
 		asyncio.run(send_message(mes))
 
+	session.close
+
 	if __name__ == "__main__":
 		plt.figure()
 		ax = plt.subplot(2, 1, 1)

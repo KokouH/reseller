@@ -104,6 +104,7 @@ class Analizer(Process):
 		self.load_items()
 		self.db_connect()
 		self.start_analize()
+		self._db_session.close()
 
 if __name__ == "__main__":
 	anal = Analizer(4)

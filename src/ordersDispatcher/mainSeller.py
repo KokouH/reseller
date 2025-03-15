@@ -9,7 +9,7 @@ from utils.Parser import Parser
 from models.Table import ItemsBase
 from steampy.models import GameOptions
 from random import random
-from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.orm import declarative_base, sessionmaker, Session
 from sqlalchemy import create_engine
 
 class Seller(Process):
@@ -21,7 +21,7 @@ class Seller(Process):
 		self._accounts: List[accounts.Account] = accs.get_accounts()
 		self._want_sell_table = {} # TODO name: wandRecive(per one), ADD want sell Table
 		self._parser: Parser = Parser(use_proxy=False)
-		self._db_session: None | Any = None
+		self._db_session: None | Session = None
 
 		# self.update_want_sell_table()
 
@@ -111,3 +111,4 @@ class Seller(Process):
 		self.db_connect()
 		self.sell_markable_items(GameOptions.RUST)
 		self.sell_markable_items(GameOptions.TF2)
+		self._db_session.close()

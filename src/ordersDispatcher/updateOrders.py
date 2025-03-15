@@ -82,3 +82,4 @@ class OrdersUpdater(Process):
 
 		self.buy_order_update()
 		self.sell_order_update()
+		self._session.close()
