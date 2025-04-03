@@ -1,5 +1,6 @@
 
 from config import *
+import csv
 from typing import List, Tuple
 from accounts import accounts
 
@@ -9,12 +10,18 @@ def collect_all_history(acc: accounts.Account) -> Tuple[List, List]:
 
 	bev = [ev for ev in resp['events'] if ev['event_type'] == 4]
 	sev = [ev for ev in resp['events'] if ev['event_type'] == 3]
-	
-	q = lambda e: resp['purchases'][f"{e['listingid']}_{e['purchaseid']}"] # get purchase
-	qr = lambda e: q(e)['asset']['id']
-	qw = lambda e: resp['assets']['440']['2'][qr(e)] if qr(e) in resp['assets']['440']['2'] else resp['assets']['252490']['2'].get(qr(e)) # get asset
 
-	buys = [[qw(e)['market_hash_name'], q(e)['paid_amount'] + q(e)['paid_fee']] * int(q(e)['asset']['amount']) for e in bev]
+	assets = {}
+	for appid in resp['assets']:
+		for contextid in resp['assets'][appid]:
+			for assetid in resp['assets'][appid][contextid]:
+				assets[assetid] = resp['assets'][appid][contextid][assetid]
+
+	q = lambda e: resp['purchases'][f"{e['listingid']}_{e['purchaseid']}"] # get purchase
+	qr = lambda e: resp['listings'][e['listingid']]['asset']['id']
+	qw = lambda e: assets[qr(e)] if qr(e) in assets else dict() # get asset
+
+	buys = [[qw(e).get('market_hash_name'), q(e).get('paid_amount') + q(e)['paid_fee']] * int(q(e)['asset']['amount']) for e in bev]
 	sells = [[qw(e).get('market_hash_name'), q(e)['received_amount']] for e in sev if qw(e)]
 
 	return (sells, buys)
@@ -38,10 +45,21 @@ def cals_delta(sells: List, buys: List):
 
 
 accs = accounts.Accounts()
-# accs.add(accounts.Account( *acc_data_1 ))
-# accs.add(accounts.Account( *acc_data_2 ))
-# accs.add(accounts.Account( *acc_data_3 ))
-accs.add(accounts.Account( *acc_data_4 ))
+accs.add(accounts.Account( *acc_data_1 ))
+accs.add(accounts.Account( *acc_data_2 ))
+accs.add(accounts.Account( *acc_data_3 ))
+# accs.add(accounts.Account( *acc_data_4 ))
+
+for acc in accs.get_accounts():
+	sells, buys = collect_all_history(acc)
+
+	with open(f'buys_{acc.username[:5]}.csv', 'w', newline='') as file:
+		writer = csv.writer(file)
+		writer.writerows(buys)
+	
+	with open(f'sells_{acc.username[:5]}.csv', 'w', newline='') as file:
+		writer = csv.writer(file)
+		writer.writerows(sells)
 
 # print(cals_delta( *(collect_all_history(accs.get_accounts()[0])) ))
 
