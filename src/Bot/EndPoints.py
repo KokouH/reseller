@@ -11,6 +11,7 @@ working = False
 temp_names = ["analize", "updater", "buyer", "seller", "balanceCalc"]
 
 work_proc: Process | None = None
+percent = 6.0
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 	global need_start, working, temp_names
@@ -35,14 +36,14 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 	await update.message.reply_text(START_MESSAGE, reply_markup=reply_markup)
 	
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-	global need_start, working, temp_names
+	global need_start, working, temp_names, percent
 
 	query = update.callback_query
 	await query.answer()
 
 	if (int(query.data) == len(temp_names)):
 		working = True
-		work_proc = BotMain(need_start)
+		work_proc = BotMain(need_start, percent)
 		work_proc.start()
 		await query.edit_message_text('\n'.join(i for i in need_start))
 		need_start = list()
@@ -62,3 +63,14 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 	reply_markup = InlineKeyboardMarkup(keyboard)
 
 	await query.edit_message_reply_markup(reply_markup=reply_markup)
+
+async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+	global percent
+	
+	try:
+		percent = float(update.message.text)
+		print(percent)
+	except:
+		await update.message.reply_text(f"Can't convert to float {update.message.text}")
+
+	await update.message.reply_text(f"Sets")

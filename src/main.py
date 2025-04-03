@@ -9,12 +9,13 @@ from accounts import accounts
 
 from Bot import EndPoints
 from telegram import Update
-from telegram.ext import Application, CommandHandler, CallbackQueryHandler
+from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler
 
 def MainWithBot():
 	application = Application.builder().token(TOKEN_TG).build()
 	application.add_handler(CommandHandler("start", EndPoints.start))
 	application.add_handler(CallbackQueryHandler(EndPoints.button))
+	application.add_handler(MessageHandler(None, EndPoints.message_handler))
 	application.run_polling(allowed_updates=Update.ALL_TYPES)
 
 def Main(need_start):

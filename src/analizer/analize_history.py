@@ -27,7 +27,7 @@ def collect_all_history(acc: accounts.Account) -> Tuple[List, List]:
 	return (sells, buys)
 
 def cals_delta(sells: List, buys: List):
-	buyed = 0
+	bought = 0
 	sold = 0
 	l = list()
 	buys = list(buys)
@@ -36,12 +36,12 @@ def cals_delta(sells: List, buys: List):
 		ind = next((i for i, item in enumerate(buys) if item[0] == name), None)
 		if ind:
 			sold += sell[1]
-			buyed += buys[ind][1]
+			bought += buys[ind][1]
 			l.append(sell[1] - buys[ind][1])
 			del(buys[ind])
 		else:
 			break;
-	return (buyed, sold, l)
+	return (bought, sold, l)
 
 
 accs = accounts.Accounts()

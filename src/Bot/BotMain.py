@@ -10,16 +10,16 @@ from accounts import accounts
 from utils.TelegramBot import send_message
 
 class BotMain(Process):
-	def __init__(self, need_start):
+	def __init__(self, need_start, percent):
 		super().__init__()
 		self._need_start = need_start
-		
+		self._percent = percent
 		
 	def run(self):
 		need_start = self._need_start
 
 		if 'analize' in need_start:
-			analazer_proc = Analizer(5.0)
+			analazer_proc = Analizer(self._percent)
 			analazer_proc.start()
 			analazer_proc.join()
 

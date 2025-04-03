@@ -126,14 +126,15 @@ class Buyer(Process):
 		session = Session()
 
 		f_items = session.query(ItemsBase).filter(
-			ItemsBase.trend_30d >= .96,
+			ItemsBase.trend_30d >= .98,
 			ItemsBase.trend_30d <= 1.3,
 			ItemsBase.trend_7d >= .98,
-			ItemsBase.sells_30d >= 70,
+			ItemsBase.sells_7d >= 70,
 			ItemsBase.history_stable == True,
 			ItemsBase.buy_price_deep <= 5,
 			ItemsBase.buy_price >= .1,
-			ItemsBase.sell_price_conf >= .08).all()
+			# ItemsBase.sell_price_conf >= .08
+		).all()
 		
 		session.close()
 
